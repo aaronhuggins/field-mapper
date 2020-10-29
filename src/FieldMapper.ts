@@ -2,12 +2,14 @@ import type { FieldMapLike } from './FieldMap'
 import { FieldMap } from './FieldMap'
 
 export class FieldMapper<T> {
-  constructor (tableRows: Array<FieldMapLike<T>> = []) {
+  constructor (fieldMaps: Array<FieldMapLike<T>> = []) {
     this.fields = new Map()
     this.mappers = new Map()
+    this._fieldPaths = new Map()
+    this._propertyPaths = new Map()
 
-    for (const tableRow of tableRows) {
-      this.setFieldMap(tableRow)
+    for (const fieldMap of fieldMaps) {
+      this.setFieldMap(fieldMap)
     }
 
     this.isChild = false
@@ -16,6 +18,8 @@ export class FieldMapper<T> {
   fields: Map<string, FieldMap<T>>
   mappers: Map<string, FieldMapper<T>>
   isChild: boolean
+  private _fieldPaths: Map<string, Set<string>>
+  private _propertyPaths: Map<string, Set<string>>
 
   /**
    * @param {string} propertyName
@@ -49,12 +53,50 @@ export class FieldMapper<T> {
     return this.mappers.get(objectName)
   }
 
+  /** Get a set of field paths for a specific object name.
+   * @param {string} objectName
+   * @returns {FieldMapper}
+   */
+  getFieldPaths (objectName: string): Set<string> {
+    return this._fieldPaths.get(objectName) || new Set()
+  }
+
+  /** Get a set of property paths for a specific object name.
+   * @param {string} objectName
+   * @returns {FieldMapper}
+   */
+  getPropertyPaths (objectName: string): Set<string> {
+    return this._propertyPaths.get(objectName) || new Set()
+  }
+
   /** Method for creating and propagating field maps. */
   setFieldMap (object: FieldMapLike<T> | FieldMap<T>) {
     // Short-circuit for child field maps.
     if (object instanceof FieldMap) {
-      this.fields.set((object as any)._fieldName, object)
-      this.fields.set((object as any)._propertyName, object)
+      const fieldMap: {
+        _fieldName: string
+        _propertyName: string
+        _objectName: string
+      } = object as any
+
+      this.fields.set(fieldMap._fieldName, object)
+      this.fields.set(fieldMap._propertyName, object)
+
+      if (fieldMap._fieldName.includes('.')) {
+        const fieldPathSet = this._fieldPaths.get(fieldMap._objectName) || new Set()
+
+        fieldPathSet.add(fieldMap._fieldName)
+
+        this._fieldPaths.set(fieldMap._objectName, fieldPathSet)
+      }
+
+      if (fieldMap._propertyName.includes('.')) {
+        const propertyPathSet = this._propertyPaths.get(fieldMap._objectName) || new Set()
+
+        propertyPathSet.add(fieldMap._propertyName)
+
+        this._propertyPaths.set(fieldMap._objectName, propertyPathSet)
+      }
 
       return
     } else {
@@ -66,6 +108,22 @@ export class FieldMapper<T> {
 
     this.fields.set(fieldName, field)
     this.fields.set(propertyName, field)
+
+    if (fieldName.includes('.')) {
+      const fieldPathSet = this._fieldPaths.get(objectName) || new Set()
+
+      fieldPathSet.add(fieldName)
+
+      this._fieldPaths.set(objectName, fieldPathSet)
+    }
+
+    if (propertyName.includes('.')) {
+      const propertyPathSet = this._propertyPaths.get(objectName) || new Set()
+
+      propertyPathSet.add(propertyName)
+
+      this._propertyPaths.set(objectName, propertyPathSet)
+    }
 
     let mapper = this.mappers.get(objectName)
 
