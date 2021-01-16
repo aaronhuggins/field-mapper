@@ -2,7 +2,7 @@ import 'mocha'
 import { FieldMap, FieldMapper, FieldMapLike } from '../src/index'
 import { strictEqual, deepStrictEqual } from 'assert'
 
-interface ShipDetailData extends FieldMapLike<ShipDetailData> {
+interface ShipDetailData extends FieldMapLike<'ShippingDetail__c'> {
   PartitionKey: string
   RowKey: string
   additional: number
@@ -40,7 +40,7 @@ const data: Array<ShipDetailData> = [
 
 describe('FieldMapper', () => {
   it('should ingest array of fields', () => {
-    const myMapper = new FieldMapper<ShipDetailData>(data)
+    const myMapper = new FieldMapper(data)
 
     strictEqual(myMapper instanceof FieldMapper, true)
     strictEqual(myMapper.toTableRows().length, 0)
@@ -66,7 +66,7 @@ describe('FieldMapper', () => {
   })
 
   it('should handle all mapping data', () => {
-    const myMapper = new FieldMapper<ShipDetailData>(data)
+    const myMapper = new FieldMapper(data)
     const orderMap = myMapper.getFieldMap('Order__c')
     const shipDetailMapper = myMapper.getObjectMap('ShippingDetail__c')
     const warehouseMap = shipDetailMapper.getFieldMap('Warehouse__c')
