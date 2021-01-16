@@ -1,12 +1,12 @@
-export interface FieldMapLike<T> {
+export interface FieldMapLike<T extends string = any> {
   fieldName: string
   propertyName: string
-  objectName: string
+  objectName: T
   active?: boolean
   [key: string]: any
 }
 
-export class FieldMap<T> implements FieldMapLike<T> {
+export class FieldMap<T extends string = any> implements FieldMapLike<T> {
   constructor (object: FieldMapLike<T>) {
     const {
       fieldName,
@@ -57,7 +57,7 @@ export class FieldMap<T> implements FieldMapLike<T> {
 
   private _fieldName: string
   private _propertyName: string
-  private _objectName: string
+  private _objectName: T
   private _active: boolean
   modified: boolean
   [key: string]: any
@@ -89,7 +89,7 @@ export class FieldMap<T> implements FieldMapLike<T> {
   /** Immutable property objectName.
    * @param {string} _objectName
    */
-  set objectName (_objectName: string) {
+  set objectName (_objectName: T) {
     // Makes objectName immutable.
   }
 
@@ -109,7 +109,7 @@ export class FieldMap<T> implements FieldMapLike<T> {
     return this._propertyName
   }
 
-  get objectName (): string {
+  get objectName (): T {
     this.active = true
 
     return this._objectName

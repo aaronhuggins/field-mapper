@@ -1,8 +1,8 @@
 import type { FieldMapLike } from './FieldMap'
 import { FieldMap } from './FieldMap'
 
-export class FieldMapper<T> {
-  constructor (fieldMaps: Array<FieldMapLike<T>> = []) {
+export class FieldMapper {
+  constructor (fieldMaps: Array<FieldMapLike<any>> = []) {
     this.fields = new Map()
     this.mappers = new Map()
     this._fieldPaths = new Map()
@@ -15,8 +15,8 @@ export class FieldMapper<T> {
     this.isChild = false
   }
 
-  fields: Map<string, FieldMap<T>>
-  mappers: Map<string, FieldMapper<T>>
+  fields: Map<string, FieldMap<any>>
+  mappers: Map<string, FieldMapper>
   isChild: boolean
   private _fieldPaths: Map<string, Set<string>>
   private _propertyPaths: Map<string, Set<string>>
@@ -70,7 +70,7 @@ export class FieldMapper<T> {
   }
 
   /** Method for creating and propagating field maps. */
-  setFieldMap (object: FieldMapLike<T> | FieldMap<T>) {
+  setFieldMap (object: FieldMapLike<any> | FieldMap<any>) {
     // Short-circuit for child field maps.
     if (object instanceof FieldMap) {
       const fieldMap: {
@@ -138,8 +138,8 @@ export class FieldMapper<T> {
   }
 
   /** Get all field maps as plain objects. */
-  toJSON (): Array<FieldMapLike<T>> {
-    const json: Array<FieldMapLike<T>> = []
+  toJSON (): Array<FieldMapLike<any>> {
+    const json: Array<FieldMapLike<any>> = []
 
     if (this.isChild) {
       // Create a set so that there are no duplicate fieldMap references.
@@ -164,8 +164,8 @@ export class FieldMapper<T> {
    * @param {boolean} [allMaps=false] - Optionally get all field maps.
    * @returns {Array<{ PartitionKey: string, RowKey: string, fieldName: string, propertyName: string, objectName: string, active: boolean }>}
    */
-  toTableRows (allMaps: boolean = false): Array<FieldMapLike<T>> {
-    const tableRows: Array<FieldMapLike<T>> = []
+  toTableRows (allMaps: boolean = false): Array<FieldMapLike<any>> {
+    const tableRows: Array<FieldMapLike<any>> = []
 
     if (this.isChild) {
       // Create a set so that there are no duplicate fieldMap references.
