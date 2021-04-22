@@ -26,7 +26,11 @@ export class FieldMapper {
    * @returns {string}
    */
   getFieldName (propertyName: string) {
-    return this.fields.get(propertyName).fieldName
+    const fieldMap = this.fields.get(propertyName)
+
+    if (typeof fieldMap === 'object') {
+      return fieldMap.fieldName
+    }
   }
 
   /**
@@ -34,7 +38,11 @@ export class FieldMapper {
    * @returns {string}
    */
   getPropertyName (fieldName : string) {
-    return this.fields.get(fieldName).propertyName
+    const fieldMap = this.fields.get(fieldName)
+
+    if (typeof fieldMap === 'object') {
+      return fieldMap.propertyName
+    }
   }
 
   /** Get the field map instance for a field name or property name.
@@ -58,7 +66,13 @@ export class FieldMapper {
    * @returns {FieldMapper}
    */
   getFieldPaths (objectName: string): Set<string> {
-    return this._fieldPaths.get(objectName) || new Set()
+    const fieldPaths = this._fieldPaths.get(objectName)
+
+    if (typeof fieldPaths === 'object') {
+      return fieldPaths
+    }
+
+    return new Set()
   }
 
   /** Get a set of property paths for a specific object name.
@@ -66,7 +80,13 @@ export class FieldMapper {
    * @returns {FieldMapper}
    */
   getPropertyPaths (objectName: string): Set<string> {
-    return this._propertyPaths.get(objectName) || new Set()
+    const propertyPaths = this._propertyPaths.get(objectName)
+
+    if (typeof propertyPaths === 'object') {
+      return propertyPaths
+    }
+
+    return new Set()
   }
 
   /** Method for creating and propagating field maps. */
